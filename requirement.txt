@@ -1,0 +1,11 @@
+flask_restful==0.3.6
+flask_script==2.0.6
+flask_migrate==2.1.1
+marshmallow==2.14.0
+flask_marshmallow==0.8.0
+marshmallow-sqlalchemy==0.13.2
+Flask==1.1.1
+Flask-JWT-Extended==3.24.1
+Flask-Mail==0.9.1
+Flask-SQLAlchemy==2.4.1
+pycrypto==2.6.1
