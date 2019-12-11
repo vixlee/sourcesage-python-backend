@@ -14,7 +14,7 @@ class User(db.Model):
     name = db.Column(db.String(120))
     age = db.Column(db.Integer)
     gender = db.Column(db.Integer)
-    image = db.Column(db.LargeBinary)
+    image = db.Column(db.String)
 
     def __init__(self, email, password, name, age, gender, image = None):
         self.email = email
@@ -32,7 +32,7 @@ class UserSchema(ma.Schema):
     gender = fields.Integer(required=True)
     image = fields.String()
     class Meta:
-        fields = ('email', 'password', 'name', 'age', 'gender',)
+        fields = ('email', 'password', 'name', 'age', 'gender','image')
 
 class LoginFormSchema(ma.Schema):
     email = fields.Email(required=True)

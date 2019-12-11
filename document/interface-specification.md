@@ -4,13 +4,13 @@ HTTP 1.0 or higher must be used.
 
 ## User API
 
-| URL                       | HTTP Method     | Description                                                                 |
-| ------------------------- | ----------------| ----------------------------------------------------------------------------|
-| `/api/v1/sign-up`         | POST            | Register new user                                                           |
-| `/api/v1/login`           | POST            | Login user-api                                                              |
-| `/api/v1/me`              | GET             | Show details logged user. Authorization: Bearer <Access-Token> is required. |
-| `/api/v1/reset-password`  | POST            | Change password                                                             |
-| `/api/v1/forgot-password` | POST            | Forgot password, user provide `email`                                       |
+| URL                         | HTTP Method     | Description                                                                 |
+| --------------------------- | ----------------| ----------------------------------------------------------------------------|
+| `/api/auth/sign-up`         | POST            | Register new user                                                           |
+| `/api/auth/login`           | POST            | Login user-api                                                              |
+| `/api/auth/me`              | GET             | Show details logged user. Authorization: Bearer <Access-Token> is required. |
+| `/api/auth/reset-password`  | POST            | Change password                                                             |
+| `/api/auth/forgot-password` | POST            | Forgot password, user provide `email`                                       |
 
 
 ## HTTP Request Methods

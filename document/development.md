@@ -10,14 +10,25 @@ To build and develop, you need to have [Python3](https://www.python.org/download
 ## Folders/Files structure
 ```
 sourcesage_python_backend
-├── app.py
-├── common.py
-├── config.py
-├── __init__.py
-├── migrate.py
-├── models.py
-├── README.md
-└── requirement.txt
+|____bin
+| |____user_api
+|____Makefile
+|____user_api
+| |____version.py
+| |____models.py
+| |______init__.py
+| |____common.py
+| |____app.py
+| |____config_app.py
+| |____migrate.py
+|____document
+| |____development.md
+| |____interface-specification.md
+|____README.md
+|____setup.py
+|____.gitignore
+|____requirement.txt
+|____Procfile
 ```
 
 ## Frameworks / Libs

@@ -9,3 +9,12 @@ install: env
 
 run: install
 	env/bin/user_api
+
+clean: 
+	$(RM) -r .vscode
+	$(RM) -r build
+	$(RM) -r dist
+	$(RM) -r env
+	$(RM) -r *.egg-info
+	$(RM) -r */__pycache__
+	$(RM) -r */*.db

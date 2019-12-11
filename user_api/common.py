@@ -4,6 +4,7 @@ import os
 import sqlite3
 from Crypto import Random
 from Crypto.Cipher import AES
+import re
 
 class AESCipher(object):
 
@@ -29,6 +30,19 @@ class AESCipher(object):
     @staticmethod
     def _unpad(s):
         return s[:-ord(s[len(s)-1:])]
+
+def validate_password_strength(password):
+    if len(password) < 8:
+        return (False, "Password length is at least 8 characters")
+    if not re.search(r'\d', password):
+        return (False, "Password must contains at least one digit character")
+    if not re.search(r'[A-Z]', password):
+        return (False, "Password must contains at least uppercase character")
+    if not re.search(r'[a-z]', password):
+        return (False, "Password must contains at least lowercase character")
+    if not re.search(r'[@_!#$%^&*()<>?/\|}{~:]', password):
+        return (False, "Password must contains at least special character")
+    return (True, "")
 
 def create_db_file(path_file):
     db = sqlite3.connect(path_file)

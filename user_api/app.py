@@ -6,16 +6,24 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 from flask_mail import Mail,  Message
+from flask_cors import CORS
 
 import os
 import datetime
 import hashlib
 import sys
-import user_api.config_app as config_app
-from user_api.common import AESCipher, create_db_file
-from user_api.models import User, db, user_schema, login_form_schema, reset_password_schema
+try:
+    import user_api.config_app as config_app
+    from user_api.common import AESCipher, create_db_file, validate_password_strength
+    from user_api.models import User, db, user_schema, login_form_schema, reset_password_schema
+except:
+    import config_app as config_app
+    from common import AESCipher, create_db_file, validate_password_strength
+    from models import User, db, user_schema, login_form_schema, reset_password_schema
+
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(config_app)
 db.init_app(app)
 jwt = JWTManager(app)
@@ -27,7 +35,7 @@ sys.path.append(dir_path)
 if not os.path.isfile(dir_path+'/developement.db'):
     create_db_file(dir_path+'/developement.db')
 
-@app.route("/api/v1/sign-up", methods=["POST"])
+@app.route("/api/auth/sign-up", methods=["POST"])
 def add_user():
     if not request.is_json:
         return jsonify({"message": "Data must be a JSON object"}), 400
@@ -39,16 +47,20 @@ def add_user():
     if user:
         return jsonify({"message": "Email '%s' already registered" % email}), 409
     password = request.json['password']
+    success, message = validate_password_strength(password)
+    if not success:
+        return jsonify({"message": message}), 400
     encrypted_password = cipher.encrypt(password)
     name = request.json['name']
     age = request.json['age']
     gender = request.json['gender']
-    new_user = User(email, encrypted_password, name, age, gender)
+    image = request.json['image']
+    new_user = User(email, encrypted_password, name, age, gender, image)
     db.session.add(new_user)
     db.session.commit()
     return "", 201
 
-@app.route('/api/v1/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST'])
 def login():
     if not request.is_json:
         return jsonify({"message": "Data must be a JSON object"}), 400
@@ -59,7 +71,7 @@ def login():
     password = request.json.get('password', None)
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"message": "User User not found"}), 401
+        return jsonify({"message": "User not found"}), 404
     decrypted_password = cipher.decrypt(user.password)
     if password == decrypted_password:
         expires = datetime.timedelta(minutes=app.config['TOKEN_EXPIRED_MIN'])
@@ -72,14 +84,14 @@ def login():
     else:
         return jsonify({"message": "Wrong password !"}), 401
 
-@app.route("/api/v1/me", methods=["GET"])
+@app.route("/api/auth/me", methods=["GET"])
 @jwt_required
 def show_me():
     me = get_jwt_identity()
     user = User.query.filter_by(email=me['email']).first()
     return user_schema.jsonify(user)
 
-@app.route("/api/v1/reset-password", methods=["POST"])
+@app.route("/api/auth/reset-password", methods=["POST"])
 def reset_password():
     if not request.is_json:
         return jsonify({"message": "Data must be a JSON object"}), 400
@@ -99,7 +111,7 @@ def reset_password():
     db.session.commit()
     return "", 204
 
-@app.route("/api/v1/forgot-password", methods=["POST"])
+@app.route("/api/auth/forgot-password", methods=["POST"])
 def forgot_password():
     try:
         if not request.is_json:
@@ -108,7 +120,7 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify({"message": "User not found"}), 404
-        message = mail.send_message(
+        message = Message(
             subject='Reset your password',
             sender=app.config['MAIL_USERNAME'],
             recipients=[email],
